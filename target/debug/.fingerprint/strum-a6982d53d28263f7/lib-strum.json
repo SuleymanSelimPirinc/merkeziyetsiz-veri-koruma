@@ -1,0 +1,1 @@
+{"rustc":13800692020808712694,"features":"[]","declared_features":"[\"derive\", \"strum_macros\"]","target":6099196167003891281,"profile":2241668132362809309,"path":3066954961842558028,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug\\.fingerprint\\strum-a6982d53d28263f7\\dep-lib-strum","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}

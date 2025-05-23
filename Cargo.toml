@@ -1,0 +1,41 @@
+[package]
+name = "decentralized_identity_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+# === SADECE WASM İÇİN GEREKLİ BAĞIMLILIKLAR (genel) ===
+[dependencies]
+# Şifreleme ve WASM temelleri
+aes-gcm = "0.10.3"
+rand = "0.8"
+hex = "0.4"
+base64 = "0.22.1" # Bu base64, WASM uyumlu olmalı
+js-sys = "0.3.69" # Veya "0.3.77"
+getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen = "0.2"
+console_error_panic_hook = { version = "0.1.7", optional = true }
+wee_alloc = { version = "0.4.5", optional = true }
+
+# serde ve serde_json WASM'da genelde sorunsuzdur, ama eğer hata verirse buraya da alabiliriz.
+# Şimdilik burada bırakalım, çünkü `main.rs` de kullanıyor olabilir.
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# chrono da WASM ile uyumlu olmalı (özellikle `wasmbind_chrono` özelliği ile)
+# Şimdilik `main.rs` için de gerekli olabilir diye genel bölümde bırakıyorum.
+chrono = { version = "0.4", features = ["serde"] } # Gerekirse 'wasmbind' özelliği eklenebilir
+
+# === SADECE NATIVE (WASM OLMAYAN) HEDEFLER İÇİN BAĞIMLILIKLAR ===
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+ed25519-dalek = { version = "2.1", features = ["rand_core"] } # Eğer main.rs'te kullanılıyorsa
+bs58 = "0.5" # Eğer main.rs'te kullanılıyorsa
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+anyhow = "1.0"
+tokio = { version = "1", features = ["full"] }
+dotenv = "0.15"
+bytes = "1" # Genellikle tokio ile birlikte gelir ve native'e özgüdür
+
+[features]
+default = ["console_error_panic_hook", "wee_alloc"]

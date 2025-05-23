@@ -1,0 +1,9 @@
+C:\Users\Windows 10\RustroverProjects\decentralized_identity_core\target\debug\deps\libzerocopy-3e4ed09b67cdab7c.rmeta: C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\lib.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\byteorder.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\post_monomorphization_compile_fail_tests.rs
+
+C:\Users\Windows 10\RustroverProjects\decentralized_identity_core\target\debug\deps\libzerocopy-3e4ed09b67cdab7c.rlib: C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\lib.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\byteorder.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\post_monomorphization_compile_fail_tests.rs
+
+C:\Users\Windows 10\RustroverProjects\decentralized_identity_core\target\debug\deps\zerocopy-3e4ed09b67cdab7c.d: C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\lib.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\byteorder.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\post_monomorphization_compile_fail_tests.rs
+
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\lib.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\byteorder.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerocopy-0.3.2\src\post_monomorphization_compile_fail_tests.rs:

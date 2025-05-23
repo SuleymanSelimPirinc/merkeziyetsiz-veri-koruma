@@ -1,0 +1,1 @@
+C:\Users\Windows\ 10\RustroverProjects\decentralized_identity_core\target\wasm32-unknown-unknown\debug\decentralized_identity_core.wasm: C:\Users\Windows\ 10\RustroverProjects\decentralized_identity_core\src\lib.rs

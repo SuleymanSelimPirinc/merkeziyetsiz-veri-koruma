@@ -1,0 +1,11 @@
+C:\Users\Windows 10\RustroverProjects\decentralized_identity_core\target\debug\deps\libspki-bb0cac222a865d18.rmeta: C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\lib.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\algorithm.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\error.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\spki.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\traits.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\document.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\../README.md
+
+C:\Users\Windows 10\RustroverProjects\decentralized_identity_core\target\debug\deps\spki-bb0cac222a865d18.d: C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\lib.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\algorithm.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\error.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\spki.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\traits.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\document.rs C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\../README.md
+
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\lib.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\algorithm.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\error.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\spki.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\traits.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\document.rs:
+C:\Users\Windows\ 10\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spki-0.5.4\src\../README.md:
