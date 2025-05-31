@@ -30,7 +30,7 @@ struct FinalArweavePacket {
     lit_protected_aes_key: LitEncryptedAesKeyPacket,
 }
 
-const TEST_FILE_PATH: &str = "test_data/test_image.png"; // VEYA "test_data/sample_video.mp4" vb.
+const TEST_FILE_PATH: &str = "test_data/test_image.png"; 
 const DECRYPTED_FILE_NAME_PREFIX: &str = "decrypted_";
 
 #[tokio::main]

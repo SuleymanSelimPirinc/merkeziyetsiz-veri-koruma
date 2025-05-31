@@ -32,7 +32,7 @@ pub fn wasm_dealloc(ptr: *mut u8, size: usize) {
 }
 
 #[wasm_bindgen]
-pub fn generate_aes_key_wasm() -> js_sys::Uint8Array { // Bu zaten çalışıyordu, kalsın
+pub fn generate_aes_key_wasm() -> js_sys::Uint8Array { // Çalışıyor
     let mut key_bytes = [0u8; 32];
     RandOsRng.fill_bytes(&mut key_bytes);
     js_sys::Uint8Array::from(&key_bytes[..])
@@ -105,3 +105,13 @@ pub fn decrypt_data_wasm(
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

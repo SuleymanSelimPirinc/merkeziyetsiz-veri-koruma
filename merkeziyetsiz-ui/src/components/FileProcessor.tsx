@@ -8,7 +8,8 @@ import arweaveService from '../services/arweaveService';
 import { LIT_ABILITY } from '@lit-protocol/constants';
 import { LitAccessControlConditionResource } from '@lit-protocol/auth-helpers';
 import { LitResourceAbilityRequest, UnifiedAccessControlConditions } from '@lit-protocol/types';
-
+import contractService from '../services/contractService'; // YENİ IMPORT
+import { FileMetadata } from '../services/fileTypes'; // YENİ IMPORT
 // bytesToHex fonksiyonunu component dışında tanımla
 const bytesToHex = (bytes: Uint8Array): string => {
     return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
@@ -45,6 +46,50 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
     const [decryptedFileName, setDecryptedFileName] = useState<string>('decrypted_file');
     const [currentUserAddress, setCurrentUserAddress] = useState<string | null>(null);
     const [currentSigner, setCurrentSigner] = useState<ethers.Signer | null>(null);
+    const [userUploadedFiles, setUserUploadedFiles] = useState<FileMetadata[]>([]);
+    const [isLoadingUserFiles, setIsLoadingUserFiles] = useState<boolean>(false);
+
+    const fetchUserFiles = useCallback(async () => {
+        console.log("fetchUserFiles: Başlatıldı. UserAddress:", currentUserAddress, "Signer var mı?:", !!currentSigner);
+        if (!currentUserAddress || !currentSigner || !currentSigner.provider) {
+            setUserUploadedFiles([]);
+            if (!currentUserAddress) console.log("fetchUserFiles: currentUserAddress eksik.");
+            if (!currentSigner) console.log("fetchUserFiles: currentSigner eksik.");
+            if (currentSigner && !currentSigner.provider) console.log("fetchUserFiles: currentSigner.provider eksik.");
+            return;
+        }
+        setIsLoadingUserFiles(true);
+        setMessage("Dosya listeniz kontrattan çekiliyor...");
+        try {
+            const provider = currentSigner.provider;
+
+            const network = await provider.getNetwork();
+            console.log("fetchUserFiles: Provider Network Name:", network.name, "Chain ID:", network.chainId);
+            if (network.chainId !== 11155111) { // Sepolia Chain ID
+                console.warn("fetchUserFiles: Yanlış ağda! Beklenen Sepolia (11155111), mevcut:", network.chainId);
+                setMessage("Hata: Dosya listesini çekmek için lütfen MetaMask'ı Sepolia ağına getirin.");
+                setIsLoadingUserFiles(false);
+                setUserUploadedFiles([]);
+                return;
+            }
+
+            console.log("fetchUserFiles: Calling getFilesForUser with provider and address:", currentUserAddress);
+            // DEĞİŞKEN ADI DEĞİŞTİRİLDİ: files -> fetchedFileMetadatas
+            const fetchedFileMetadatas = await contractService.getFilesForUser(provider, currentUserAddress);
+
+            setUserUploadedFiles(fetchedFileMetadatas); // Güncellenmiş değişken adıyla state'i ayarla
+            setMessage(fetchedFileMetadatas.length > 0 ? `${fetchedFileMetadatas.length} dosya bulundu.` : "Daha önce yüklenmiş dosyanız bulunmuyor.");
+            console.log("Fetched user files:", fetchedFileMetadatas);
+        } catch (error: any) {
+            setMessage(`Hata (Dosya Listesi Çekme): ${error.message}`);
+            console.error("Error fetching user files:", error);
+            if (error.data) console.error("Revert data:", error.data);
+            if (error.reason) console.error("Revert reason:", error.reason);
+            setUserUploadedFiles([]);
+        } finally {
+            setIsLoadingUserFiles(false);
+        }
+    }, [currentUserAddress, currentSigner]);
 
     useEffect(() => {
         setCurrentUserAddress(propUserAddress);
@@ -56,7 +101,7 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
 
 
     useEffect(() => {
-        const initWasmAndLit = async () => {
+        const initAll = async () => {
             setIsLoadingWasm(true); setMessage('WASM modülü yükleniyor...');
             try {
                 const moduleLoader = await import('../lib/rust-crypto/decentralized_identity_core');
@@ -66,14 +111,20 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
                 if (initializedWasm.set_panic_hook) initializedWasm.set_panic_hook();
                 setMessage('WASM yüklendi.');
                 if (propSigner && propUserAddress) { // propSigner ve propUserAddress kullanıldı
-                    setMessage('Lit Service hazırlanıyor...'); await litService.connectAndSetSigner(propSigner);
-                    setMessage('WASM ve Lit Service hazır. Arweave cüzdanınızı ve ardından dosyanızı seçebilirsiniz.');
-                } else { setMessage('WASM yüklendi. Lit Service için cüzdan bağlantısı bekleniyor.'); litService.clearSigner(); }
+                    setMessage('Lit Service hazırlanıyor...');
+                    await litService.connectAndSetSigner(propSigner);
+                    setMessage('WASM ve Lit Service hazır. Dosyalarınız çekiliyor...');
+                    await fetchUserFiles(); // <-- YENİ EKLENEN SATIR
+                } else {
+                    setUserUploadedFiles([]); // Signer yoksa listeyi temizle
+                    litService.clearSigner();
+                    setMessage('WASM yüklendi. Lit Service için cüzdan bağlantısı bekleniyor.');
+                }
             } catch (err) { const e = (err instanceof Error) ? err.message : String(err); setMessage(`Hata (Başlatma): ${e}`); console.error("Init Error:", e); }
             finally { setIsLoadingWasm(false); }
         };
-        initWasmAndLit();
-    }, [propSigner, propUserAddress]); // prop'lara bağımlı
+        initAll();
+    }, [propSigner, propUserAddress, fetchUserFiles]); // prop'lara bağımlı
 
     const handleEncryptionFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -193,6 +244,7 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
         if (!litEncryptedAesKey) { setMessage("Hata: AES anahtarı Lit ile korunmamış."); console.error("EncryptUpload: litEncryptedAesKey eksik"); return; }
         if (!arweaveService.isWalletLoaded() || !arweaveJwk) { setMessage("Hata: Arweave cüzdanı yüklenmemiş."); console.error("EncryptUpload: Arweave JWK eksik"); return; }
         if (!selectedFileForEncryption) { setMessage("Hata: Şifrelenecek dosya seçilmemiş."); console.error("EncryptUpload: selectedFileForEncryption eksik"); return; }
+        if (!propSigner  || !propUserAddress) { setMessage("Cüzdan bağlı değil."); return; } // currentSigner ve currentUserAddress kontrolü
 
         setMessage("Dosya şifreleniyor, paketleniyor ve Arweave'e yükleniyor...");
         let keyPtr = 0, plaintextPtr = 0;
@@ -232,7 +284,26 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
                 const txId = await arweaveService.uploadData(archiveJsonString, tags);
                 console.log("EncryptUpload: Arweave uploadData sonucu TX ID:", txId);
 
-                if (txId) { setArweaveTxId(txId); setMessage(`Paket Arweave'e yüklendi! TX ID: ${txId}`); }
+                if (txId) { setArweaveTxId(txId); setMessage(`Paket Arweave'e yüklendi! TX ID: ${txId}. Metadata kontrata kaydediliyor...`);
+
+                    try {
+                        console.log("Kontrata metadata kaydediliyor:", selectedFileForEncryption.name, txId, selectedFileForEncryption.type);
+                        await contractService.addFileMetadata(
+                            propSigner, // İşlemi imzalamak için signer
+                            selectedFileForEncryption.name,
+                            txId,
+                            selectedFileForEncryption.type || 'application/octet-stream'
+                        );
+                        setMessage(`Arweave TX: ${txId}. Metadata başarıyla kontrata kaydedildi! Liste güncelleniyor...`);
+                        await fetchUserFiles(); // Dosya listesini kontrattan çekerek güncelle
+                    } catch (contractError: any) {
+                        setMessage(`Hata (Metadata Kaydetme): ${contractError.message}. Arweave TX: ${txId}`);
+                        console.error("Error saving metadata to contract:", contractError);
+                    }
+
+                }
+
+
                 else { throw new Error("Arweave TX ID alınamadı."); }
             } else { throw new Error("WASM şifreleme sonucu hatalı.");}
         } catch(e:any){
@@ -245,7 +316,7 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
             if(plaintextPtr && wasm?.wasm_dealloc && originalFileContentForVerification) wasm.wasm_dealloc(plaintextPtr, originalFileContentForVerification.length);
             console.log("EncryptUpload: Bellek serbest bırakıldı.");
         }
-    }, [wasm, wasmMemory, aesKeyBytes, originalFileContentForVerification, litEncryptedAesKey, selectedFileForEncryption, arweaveJwk]);
+    }, [wasm, wasmMemory, aesKeyBytes, originalFileContentForVerification, litEncryptedAesKey, selectedFileForEncryption, arweaveJwk, propSigner, propUserAddress, fetchUserFiles]);
     const handleDecryptArchive = useCallback(async () => {
         console.log("handleDecryptArchive: Fonksiyon başlatıldı.");
         console.log("  Mevcut State'ler/Proplar:");
@@ -464,6 +535,40 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ signer: propSigner, userA
                             {arweaveTxId}
                         </a>
                     </p>
+                </div>
+            )}
+
+            {/* KULLANICI DOSYALARI PANELİ */}
+            {currentSigner && !isLoadingWasm && ( // Sadece cüzdan bağlıysa ve yükleme bitmişse göster
+                <div className="mt-8 pt-4 border-t border-gray-300">
+                    <h4 className="text-lg font-semibold mb-3 text-gray-700">Kaydedilmiş Dosyalarınız</h4>
+                    {isLoadingUserFiles && <p className="text-sm text-gray-500">Dosyalarınız yükleniyor...</p>}
+                    {!isLoadingUserFiles && userUploadedFiles.length === 0 && (
+                        <p className="text-sm text-gray-500">Henüz kontrata kaydedilmiş bir dosyanız bulunmuyor.</p>
+                    )}
+                    {!isLoadingUserFiles && userUploadedFiles.length > 0 && (
+                        <ul className="space-y-2 max-h-60 overflow-y-auto pr-2"> {/* Scroll eklendi */}
+                            {userUploadedFiles.map((fileMeta, index) => (
+                                <li key={fileMeta.arweaveTxId || index} className="p-3 bg-white border border-gray-200 rounded-md shadow-sm flex justify-between items-center hover:bg-gray-50 transition-colors">
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900 truncate" title={fileMeta.fileName}>{fileMeta.fileName}</p>
+                                        <p className="text-xs text-gray-500">TX ID: <span className="font-mono break-all">{fileMeta.arweaveTxId.substring(0,10)}...{fileMeta.arweaveTxId.substring(fileMeta.arweaveTxId.length - 4)}</span></p>
+                                        <p className="text-xs text-gray-500">Tarih: {new Date(fileMeta.timestamp * 1000).toLocaleDateString()}</p> {/* Sadece tarih */}
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setTxIdToDecrypt(fileMeta.arweaveTxId);
+                                            setDecryptedFileName(fileMeta.fileName); // Deşifrelenecek dosya adını ayarla
+                                            setMessage(`"${fileMeta.fileName}" deşifrelemeye hazır. Aşağıdaki 'Deşifrele' butonunu kullanın.`);
+                                        }}
+                                        className="ml-4 px-3 py-1.5 text-xs font-medium text-white bg-cyan-600 rounded-md hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                                    >
+                                        Deşifre İçin Seç
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             )}
 

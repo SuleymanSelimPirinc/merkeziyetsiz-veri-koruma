@@ -120,7 +120,7 @@ class LitService {
 
     public async encryptWithLit(
         dataToEncrypt: Uint8Array,
-        accessControlConditionsIn: any[], // Parametre tipini any[] yaptık
+        accessControlConditionsIn: any[],
         chainParam: LitChainType = 'sepolia'
     ): Promise<{ ciphertext: string; dataToEncryptHash: string }> {
         if (!this.client.ready || !this.sessionSigs) {
@@ -134,7 +134,7 @@ class LitService {
         return this.client.encrypt({
             sessionSigs: this.sessionSigs,
             chain: chainParam,
-            accessControlConditions: accessControlConditionsIn, // Eski kodunuza göre
+            accessControlConditions: accessControlConditionsIn,
             dataToEncrypt: dataToEncrypt,
         } as any);
     }

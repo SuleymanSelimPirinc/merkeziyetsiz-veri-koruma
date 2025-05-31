@@ -1,0 +1,17 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+# Solidity derleyici versiyonunu kontratınızla uyumlu hale getirin (örn: 0.8.20)
+solc_version = "0.8.20"
+# Optimizasyon ayarları (dağıtım için açılabilir)
+# optimizer = true
+# optimizer_runs = 200
+
+# RPC Endpoint'leri
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}" # .env dosyasından SEPOLIA_RPC_URL değişkenini okuyacak
+
+# İsteğe Bağlı: Etherscan API Anahtarı (Kontrat doğrulaması için)
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}", chain = 11155111, url = "https://api-sepolia.etherscan.io/api" }
